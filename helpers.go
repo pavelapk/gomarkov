@@ -16,7 +16,7 @@ type NGram []string
 
 type sparseArray map[int]int
 
-var regNonWordChars = regexp.MustCompile("[^\\w\\s]+")
+var regNonWordChars = regexp.MustCompile("[^\\p{L}\\d_\\s]+")
 var regSeveralSpaces = regexp.MustCompile("\\s+")
 
 func normalizeString(s string) string {
