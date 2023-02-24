@@ -23,6 +23,10 @@ func normalizeString(s string) string {
 	// Convert to lowercase
 	s = strings.ToLower(s)
 
+	// Replace "ё" with "е"
+	s = strings.ReplaceAll(s, "ё", "е")
+	s = strings.ReplaceAll(s, "Ё", "Е")
+
 	// Remove non-alphanumeric characters
 	s = regNonWordChars.ReplaceAllString(s, "")
 
