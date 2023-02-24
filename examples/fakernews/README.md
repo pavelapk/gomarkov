@@ -3,6 +3,7 @@
 `fakernews` builds a markov chain using the top 500 post titles on HN and generates fake HN posts
 
 ## Usage
+
 ```
 > go build -o fakernews .
 #Train on HN top stories
