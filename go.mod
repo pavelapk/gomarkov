@@ -1,4 +1,4 @@
-module github.com/mb-14/gomarkov
+module github.com/pavelapk/gomarkov
 
 go 1.14
 

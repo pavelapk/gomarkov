@@ -9,7 +9,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/mb-14/gomarkov"
+	"github.com/pavelapk/gomarkov"
 )
 
 const (
