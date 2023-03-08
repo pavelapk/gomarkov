@@ -1,6 +1,7 @@
 package gomarkov
 
 import (
+	"log"
 	"runtime"
 	"sync"
 )
@@ -41,6 +42,7 @@ func (s *spool) getClosest(str string) (int, bool) {
 	s.RLock()
 	index := ConcurrentSearchClosest(s.intMap, str, runtime.NumCPU())
 	s.RUnlock()
+	log.Printf("search: %v -> %v", str, s.intMap[index])
 	ok := index >= 0
 	return index, ok
 }
