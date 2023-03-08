@@ -3,7 +3,6 @@ package gomarkov
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"math/rand"
 	"sync"
 	"time"
@@ -27,6 +26,7 @@ type Chain struct {
 type chainJSON struct {
 	Order    int                 `json:"int"`
 	SpoolMap map[string]int      `json:"spool_map"`
+	Spools   []string            `json:"spools"`
 	FreqMat  map[int]sparseArray `json:"freq_mat"`
 }
 
@@ -34,7 +34,8 @@ type chainJSON struct {
 func (chain *Chain) MarshalJSON() ([]byte, error) {
 	obj := chainJSON{
 		chain.Order,
-		chain.statePool.stringMap,
+		nil,
+		chain.statePool.intMap,
 		chain.frequencyMat,
 	}
 	return json.Marshal(obj)
@@ -48,12 +49,22 @@ func (chain *Chain) UnmarshalJSON(b []byte) error {
 		return err
 	}
 	chain.Order = obj.Order
-	intMap := make(map[int]string)
-	for k, v := range obj.SpoolMap {
-		intMap[v] = k
+	intMap := obj.Spools
+	if len(intMap) == 0 {
+		intMap = make([]string, len(obj.SpoolMap))
+		for k, v := range obj.SpoolMap {
+			intMap[v] = k
+		}
+	}
+	stringMap := obj.SpoolMap
+	if len(stringMap) == 0 {
+		stringMap = make(map[string]int, len(intMap))
+		for i, s := range intMap {
+			stringMap[s] = i
+		}
 	}
 	chain.statePool = &spool{
-		stringMap: obj.SpoolMap,
+		stringMap: stringMap,
 		intMap:    intMap,
 	}
 	chain.frequencyMat = obj.FreqMat
@@ -66,7 +77,7 @@ func NewChain(order int) *Chain {
 	chain := Chain{Order: order}
 	chain.statePool = &spool{
 		stringMap: make(map[string]int),
-		intMap:    make(map[int]string),
+		intMap:    make([]string, 0, 1),
 	}
 	chain.frequencyMat = make(map[int]sparseArray, 0)
 	chain.lock = new(sync.RWMutex)
@@ -122,7 +133,8 @@ func (chain *Chain) Generate(current NGram) (string, error) {
 	}
 	currentIndex, currentExists := chain.statePool.get(current.key())
 	if !currentExists {
-		return "", fmt.Errorf("unknown ngram %v", current)
+		//return "", fmt.Errorf("unknown ngram %v", current)
+		currentIndex, currentExists = chain.statePool.getClosest(current.key())
 	}
 	arr := chain.frequencyMat[currentIndex]
 	sum := arr.sum()
