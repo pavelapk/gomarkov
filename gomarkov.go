@@ -138,7 +138,10 @@ func (chain *Chain) Generate(current NGram) (string, error) {
 	}
 	arr := chain.frequencyMat[currentIndex]
 	sum := arr.sum()
-	randN := rand.Intn(sum)
+	randN := 0
+	if sum > 0 {
+		randN = rand.Intn(sum)
+	}
 	for i, freq := range arr {
 		randN -= freq
 		if randN <= 0 {
