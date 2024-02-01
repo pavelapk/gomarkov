@@ -42,7 +42,11 @@ func (s *spool) getClosest(str string) (int, bool) {
 	s.RLock()
 	index := ConcurrentSearchClosest(s.intMap, str, runtime.NumCPU())
 	s.RUnlock()
-	log.Printf("search: %v -> %v", str, s.intMap[index])
 	ok := index >= 0
+	if ok {
+		log.Printf("search: %v -> %v", str, s.intMap[index])
+	} else {
+		log.Printf("search %v failed", str)
+	}
 	return index, ok
 }
